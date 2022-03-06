@@ -38,4 +38,36 @@ public class PosCommand {
         }
         return "ERROR";
     }
+
+    @ShellMethod(value = "Print Cart", key = "c")
+    public String printCart() {
+        return posService.getCart().toString();
+    }
+
+    @ShellMethod(value = "Empty Current Cart", key = "e")
+    public String emptyCart() {
+        return posService.newCart().toString();
+    }
+
+    @ShellMethod(value = "Modify Item(s) in Current Cart", key = "m")
+    public String modifyTheCart(String productId, int amountModified) {
+        int itemsCount = posService.getCart().getItems().size();
+        if (amountModified == 0) {
+            return "Warn: The amount you want to modified is 0";
+        }
+        else if (posService.edit(productId, amountModified)) {
+            if (amountModified > 0) {
+                return "Amount of your designated item increased successfully\n" + posService.getCart();
+            }
+            else if (itemsCount - posService.getCart().getItems().size() == 0) {
+                return "Amount of your designated item decreased successfully\n" + posService.getCart();
+            }
+            else {
+                return "The item has been deleted as amount is 0\n" + posService.getCart();
+            }
+        }
+        else {
+            return "Modify failed: the item you designated is not existed in the current cart";
+        }
+    }
 }
